@@ -5,7 +5,8 @@ import planner.map.POI;
 import planner.strategy.RouteStrategy;
 
 public class RoutePlanner {
-    public void planRoute(RouteStrategy strategy, String start, String end, MapManager mapManager) {
+    public void planRoute(RouteStrategy strategy, String start, String end) {
+        MapManager mapManager = MapManager.getInstance();
         String strategyName = strategy.getName();
         POI startPoi, endPoi;
         try {
@@ -15,7 +16,12 @@ public class RoutePlanner {
             System.out.println("Unfortunately, cannot plan " + strategyName + " from " + start + " to " + end + ", because " + e.getMessage());
             return;
         }
-        System.out.println(strategyName + ": " + strategy.planRoute(startPoi, endPoi, mapManager).getRouteDescription());
+
+        try {
+            System.out.println(strategyName + ": " + strategy.planRoute(startPoi, endPoi, mapManager).getRouteDescription());
+        } catch (RuntimeException e) {
+            System.out.println("Unfortunately, cannot plan " + strategyName + " from " + start + " to " + end + ", because " + e.getMessage());
+        }
     }
 
     private static POI getPoi(String poiName) {

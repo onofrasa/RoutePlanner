@@ -25,9 +25,15 @@ public class FastStrategy implements RouteStrategy {
         for (Road road : mapManager.getRoads()) {
             DefaultWeightedEdge edge = graph.addEdge(road.getStart(), road.getEnd());
             graph.setEdgeWeight(edge, road.getTime());
+            edge = graph.addEdge(road.getEnd(), road.getStart());
+            graph.setEdgeWeight(edge, road.getTime());
         }
 
         GraphPath<POI, DefaultWeightedEdge> fastRoute = DijkstraShortestPath.findPathBetween(graph, start, end);
+
+        if(fastRoute == null){
+            throw new RuntimeException("no route found from " + start.getName() + " to " + end.getName());
+        }
 
         List<POI> poiPath = fastRoute.getVertexList();
         double totalLength = 0;
@@ -35,7 +41,7 @@ public class FastStrategy implements RouteStrategy {
             POI from = poiPath.get(i);
             POI to = poiPath.get(i + 1);
             Road road = mapManager.getRoads().stream()
-                    .filter(r -> r.getStart().equals(from) && r.getEnd().equals(to))
+                    .filter(r -> r.getStart().equals(from) && r.getEnd().equals(to) || r.getStart().equals(to) && r.getEnd().equals(from))
                     .findFirst()
                     .orElse(null);
             if (road != null) {

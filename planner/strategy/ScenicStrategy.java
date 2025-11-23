@@ -25,25 +25,32 @@ public class ScenicStrategy implements RouteStrategy {
 
         while (!current.equals(end)) {
             POI localCurrent = current;
-            // collect outgoing roads that don't lead to visited nodes
+
             List<Road> outgoing = mapManager.getRoads().stream()
-                    .filter(r -> r.getStart().equals(localCurrent))
+                    .filter(r -> r.getStart().equals(localCurrent) || r.getEnd().equals(localCurrent))
+                    .map(r -> {
+                        POI neighbor = r.getStart().equals(localCurrent) ? r.getEnd() : r.getStart();
+                        return new Road(localCurrent, neighbor, r.getLength(), r.getTime());
+                    })
                     .filter(r -> !visited.contains(r.getEnd()))
                     .toList();
 
-            // prefer scenic or direct to end
             Road next = outgoing.stream()
                     .filter(r -> r.getEnd().equals(end) || r.getEnd().isScenic())
                     .findFirst()
                     .orElse(outgoing.stream().findFirst().orElse(null));
 
-            if (next == null) break; // dead end
+            if (next == null) break;
 
             totalDistance += next.getLength();
             totalTime += next.getTime();
             current = next.getEnd();
             path.add(current);
             visited.add(current);
+        }
+
+        if (end != current) {
+            throw new RuntimeException("no route found from " + start.getName() + " to " + end.getName());
         }
 
         return new Route(path, totalDistance, totalTime);
