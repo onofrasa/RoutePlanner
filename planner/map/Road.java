@@ -13,6 +13,22 @@ public class Road {
         this.end = end;
     }
 
+    public int getLength() {
+        return length;
+    }
+
+    public int getTime() {
+        return time;
+    }
+
+    public POI getStart() {
+        return start;
+    }
+
+    public POI getEnd() {
+        return end;
+    }
+
     @Override
     public String toString() {
         return "Road{" +

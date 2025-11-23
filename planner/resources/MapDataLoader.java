@@ -1,6 +1,6 @@
-package planner;
+package planner.resources;
 
-import planner.map.Map;
+import planner.map.MapManager;
 import planner.map.POI;
 import planner.map.Road;
 
@@ -14,12 +14,12 @@ import java.util.List;
 public class MapDataLoader {
 
     public static void loadData() {
-        Map map = Map.getInstance();
+        MapManager mapManager = MapManager.getInstance();
         List<POI> pointOfInterests = getPoiListFromFile();
-        map.setPointOfInterests(pointOfInterests);
+        mapManager.setPointOfInterests(pointOfInterests);
 
         List<Road> roads = getRoadListFromFile(pointOfInterests);
-        map.setRoads(roads);
+        mapManager.setRoads(roads);
     }
 
     private static List<POI> getPoiListFromFile() {

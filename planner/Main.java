@@ -1,22 +1,23 @@
 package planner;
 
-import planner.map.Map;
-import planner.map.Route;
+import planner.map.MapManager;
+import planner.resources.MapDataLoader;
 import planner.strategy.FastStrategy;
+import planner.strategy.ScenicStrategy;
+import planner.strategy.ShortStrategy;
 
 public class Main {
     public static void main(String[] args) {
         System.out.println("Route planner started...");
-        Map map = Map.getInstance();
+        MapManager mapManager = MapManager.getInstance();
         MapDataLoader.loadData();
 
-        map.getPointOfInterests().forEach(System.out::println);
-        map.getRoads().forEach(System.out::println);
-
         RoutePlanner planner = new RoutePlanner();
-        Route myRoute = planner.planRoute(new FastStrategy(), map.getPointOfInterests().get(0), map.getPointOfInterests().get(3), map);
-        System.out.println("Planned Route: " + myRoute);
+        planner.planRoute(new ShortStrategy(), "Center", "Airport", mapManager);
+        planner.planRoute(new FastStrategy(), "Center", "Airport", mapManager);
+        planner.planRoute(new ScenicStrategy(), "Center", "Airport", mapManager);
 
-
+        planner.planRoute(new ScenicStrategy(), "Home", "Airport", mapManager);
     }
+
 }

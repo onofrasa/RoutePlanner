@@ -2,14 +2,14 @@ package planner.map;
 
 import java.util.List;
 
-public class Map {
+public class MapManager {
 
-    private static final Map instance = new Map();
+    private static final MapManager instance = new MapManager();
 
-    private Map() {
+    private MapManager() {
     }
 
-    public static Map getInstance() {
+    public static MapManager getInstance() {
         return instance;
     }
 
