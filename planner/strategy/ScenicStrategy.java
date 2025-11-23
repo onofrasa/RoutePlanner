@@ -6,7 +6,9 @@ import planner.map.Road;
 import planner.map.Route;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ScenicStrategy implements RouteStrategy {
 
@@ -15,19 +17,25 @@ public class ScenicStrategy implements RouteStrategy {
         List<POI> path = new ArrayList<>();
         path.add(start);
 
+        Set<POI> visited = new HashSet<>();
+        visited.add(start);
+
         POI current = start;
         int totalDistance = 0, totalTime = 0;
 
         while (!current.equals(end)) {
             POI localCurrent = current;
-            Road next = mapManager.getRoads().stream()
+            // collect outgoing roads that don't lead to visited nodes
+            List<Road> outgoing = mapManager.getRoads().stream()
                     .filter(r -> r.getStart().equals(localCurrent))
-                    .filter(r -> r.getEnd().equals(end) || r.getEnd().isScenic()) // prefer scenic or direct to end
+                    .filter(r -> !visited.contains(r.getEnd()))
+                    .toList();
+
+            // prefer scenic or direct to end
+            Road next = outgoing.stream()
+                    .filter(r -> r.getEnd().equals(end) || r.getEnd().isScenic())
                     .findFirst()
-                    .orElse(mapManager.getRoads().stream()
-                            .filter(r -> r.getStart().equals(localCurrent))
-                            .findFirst()
-                            .orElse(null));
+                    .orElse(outgoing.stream().findFirst().orElse(null));
 
             if (next == null) break; // dead end
 
@@ -35,10 +43,10 @@ public class ScenicStrategy implements RouteStrategy {
             totalTime += next.getTime();
             current = next.getEnd();
             path.add(current);
+            visited.add(current);
         }
 
         return new Route(path, totalDistance, totalTime);
-
     }
 
     @Override

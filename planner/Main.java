@@ -18,6 +18,10 @@ public class Main {
         planner.planRoute(new ScenicStrategy(), "Center", "Airport", mapManager);
 
         planner.planRoute(new ScenicStrategy(), "Home", "Airport", mapManager);
+
+        planner.planRoute(new ShortStrategy(), "Airport", "Center", mapManager);
+        planner.planRoute(new FastStrategy(), "Airport", "Center", mapManager);
+        planner.planRoute(new ScenicStrategy(), "Airport", "Center", mapManager);
     }
 
 }
