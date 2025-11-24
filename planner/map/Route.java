@@ -14,7 +14,7 @@ public class Route {
         this.totalTime = totalTime;
     }
 
-    public String getRouteDescription(){
+    public String getRouteDescription() {
         String waypointsDescription = waypoints.stream().map(POI::getFullName).collect(Collectors.joining(" → "));
         return waypointsDescription + ", Total Distance: " + totalDistance + " km, Total Time: " + totalTime + " min";
     }

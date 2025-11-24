@@ -32,11 +32,7 @@ public class POI {
 
     @Override
     public String toString() {
-        return "POI{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", isScenic=" + isScenic +
-                '}';
+        return id + " " + name;
     }
 
     @Override

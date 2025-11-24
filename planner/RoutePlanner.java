@@ -2,16 +2,23 @@ package planner;
 
 import planner.map.MapManager;
 import planner.map.POI;
+import planner.strategy.FastStrategy;
 import planner.strategy.RouteStrategy;
+import planner.strategy.ScenicStrategy;
+import planner.strategy.ShortStrategy;
+
+import java.util.Scanner;
 
 public class RoutePlanner {
-    public void planRoute(RouteStrategy strategy, String start, String end) {
-        MapManager mapManager = MapManager.getInstance();
+    MapManager mapManager = MapManager.getInstance();
+
+    public void planRoute(Integer start, Integer end, RouteStrategy strategy) {
+
         String strategyName = strategy.getName();
         POI startPoi, endPoi;
         try {
-            startPoi = getPoi(start);
-            endPoi = getPoi(end);
+            startPoi = getPoiById(start);
+            endPoi = getPoiById(end);
         } catch (RuntimeException e) {
             System.out.println("Unfortunately, cannot plan " + strategyName + " from " + start + " to " + end + ", because " + e.getMessage());
             return;
@@ -24,11 +31,11 @@ public class RoutePlanner {
         }
     }
 
-    private static POI getPoi(String poiName) {
+    public static POI getPoiById(Integer poiId) {
         MapManager mapManager = MapManager.getInstance();
         return mapManager.getPointOfInterests().stream()
-                .filter(poi -> poi.getName().equalsIgnoreCase(poiName))
+                .filter(poi -> poi.getId().equalsIgnoreCase(poiId.toString()))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException(poiName + " was not found"));
+                .orElseThrow(() -> new RuntimeException(poiId + " was not found"));
     }
 }

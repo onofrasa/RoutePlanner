@@ -6,5 +6,6 @@ import planner.map.Route;
 
 public interface RouteStrategy {
     Route planRoute(POI start, POI end, MapManager mapManager);
+
     String getName();
 }

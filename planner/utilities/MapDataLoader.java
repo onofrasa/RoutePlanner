@@ -1,4 +1,4 @@
-package planner.resources;
+package planner.utilities;
 
 import planner.map.MapManager;
 import planner.map.POI;
