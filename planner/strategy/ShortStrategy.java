@@ -1,54 +1,24 @@
 package planner.strategy;
 
-import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 import planner.map.MapManager;
 import planner.map.POI;
-import planner.map.Road;
 import planner.map.Route;
+import planner.utilities.RouteUtils;
 
 import java.util.List;
 
 public class ShortStrategy implements RouteStrategy {
     @Override
     public Route planRoute(POI start, POI end, MapManager mapManager) {
-        Graph<POI, DefaultWeightedEdge> graph =
-                new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);
+        var graph = RouteUtils.buildGraph(mapManager, "length");
+        GraphPath<POI, DefaultWeightedEdge> path = RouteUtils.findPath(graph, start, end);
 
-        for (POI poi : mapManager.getPointOfInterests()) {
-            graph.addVertex(poi);
-        }
+        List<POI> poiPath = path.getVertexList();
+        double totalTime = RouteUtils.calculateSecondaryMetric(poiPath, mapManager, "time");
 
-        for (Road road : mapManager.getRoads()) {
-            DefaultWeightedEdge edge = graph.addEdge(road.getStart(), road.getEnd());
-            graph.setEdgeWeight(edge, road.getLength());
-            edge = graph.addEdge(road.getEnd(), road.getStart());
-            graph.setEdgeWeight(edge, road.getLength());
-        }
-
-        GraphPath<POI, DefaultWeightedEdge> shortRoute = DijkstraShortestPath.findPathBetween(graph, start, end);
-        if(shortRoute == null){
-            throw new RuntimeException("no route found from " + start.getName() + " to " + end.getName());
-        }
-
-        List<POI> poiPath = shortRoute.getVertexList();
-        double totalTime = 0;
-        for (int i = 0; i < poiPath.size() - 1; i++) {
-            POI from = poiPath.get(i);
-            POI to = poiPath.get(i + 1);
-            Road road = mapManager.getRoads().stream()
-                    .filter(r -> r.getStart().equals(from) && r.getEnd().equals(to) || r.getStart().equals(to) && r.getEnd().equals(from))
-                    .findFirst()
-                    .orElse(null);
-            if (road != null) {
-                totalTime += road.getTime();
-            }
-        }
-
-        return new Route(poiPath, shortRoute.getWeight(), totalTime);
+        return new Route(poiPath, path.getWeight(), totalTime);
     }
 
     @Override

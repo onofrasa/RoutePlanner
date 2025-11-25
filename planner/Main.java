@@ -1,26 +1,37 @@
 package planner;
 
-import planner.resources.MapDataLoader;
-import planner.strategy.FastStrategy;
-import planner.strategy.ScenicStrategy;
-import planner.strategy.ShortStrategy;
+import planner.map.MapManager;
+import planner.strategy.RouteStrategy;
+import planner.utilities.MapDataLoader;
+import planner.utilities.Menu;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Loading map data");
+
+        MapManager mapManager = MapManager.getInstance();
         MapDataLoader.loadData();
-
-        System.out.println("Planning routes");
+        Menu menu = new Menu(mapManager.getPointOfInterests());
         RoutePlanner planner = new RoutePlanner();
-        planner.planRoute(new ShortStrategy(), "Center", "Airport");
-        planner.planRoute(new FastStrategy(), "Center", "Airport");
-        planner.planRoute(new ScenicStrategy(), "Center", "Airport");
 
-        planner.planRoute(new ScenicStrategy(), "Home", "Airport");
+        Integer continueProgram = 1;
+        // loop to allow multiple route planning
+        while (!continueProgram.equals(0)) {
+            //choose start and destination
+            Integer startOption = menu.chooseStartPoint();
+            if (startOption == null) continue;
 
-        planner.planRoute(new ShortStrategy(), "Airport", "Center");
-        planner.planRoute(new FastStrategy(), "Airport", "Center");
-        planner.planRoute(new ScenicStrategy(), "Airport", "Center");
+            Integer destinationOption = menu.chooseDestination(startOption);
+            if (destinationOption == null) continue;
+
+            //choose route strategy
+            RouteStrategy strategyOption = menu.chooseStrategy();
+            if (strategyOption == null) continue;
+
+            planner.planRoute(startOption, destinationOption, strategyOption);
+
+            continueProgram = menu.continueProgram();
+        }
     }
+
 
 }
